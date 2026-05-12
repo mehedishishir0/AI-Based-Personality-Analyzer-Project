@@ -2,11 +2,6 @@ const mongoose = require("mongoose");
 
 const analysisSchema = new mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-
     answers: [
       {
         questionId: Number,

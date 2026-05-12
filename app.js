@@ -9,14 +9,14 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-  origin: ["*"],
+  origin: ["http://localhost:3000"],
   credentials: true,
 }));
 
 // routes
 app.use("/api/v1/auth", require("./routes/authRoute"));
 app.use("/api/v1/analysis", require("./routes/analysisRoute"));
-
+app.use("/api/v1/questions", require("./routes/questionRoute"));
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });

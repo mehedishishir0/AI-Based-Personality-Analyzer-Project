@@ -1,41 +1,39 @@
 const Analysis = require("../model/analysisModel");
-const calculateScores = require("../config/scoringEngine");
 const generateAnalysis = require("../service/ai.service");
 
 const createAnalysis = async (req, res) => {
   try {
     const { answers } = req.body;
 
-    if (!answers || answers.length === 0) {
+    // ✅ validation
+    if (!answers || !Array.isArray(answers) || answers.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "Answers required",
+        message: "Answers are required",
       });
     }
 
-    // STEP 1: scoring
-    const scores = calculateScores(answers);
+    // ✅ AI handles everything now
+    const aiResult = await generateAnalysis(answers);
 
-    // STEP 2: AI analysis
-    const result = await generateAnalysis(answers, scores);
-
-    // STEP 3: save DB
+    // ✅ save in DB
     const analysis = await Analysis.create({
-      user: req.user._id,
       answers,
-      scores,
-      result,
+      scores: aiResult.scores,
+      result: aiResult.analysis,
     });
 
     return res.status(201).json({
       success: true,
       data: analysis,
     });
+
   } catch (error) {
-    console.log(error);
+    console.error("Analysis Error:", error);
+
     return res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: "Failed to generate analysis",
     });
   }
 };
